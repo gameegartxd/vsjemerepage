@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(response => response.text())
         .then(html => {
             document.getElementById("header-container").innerHTML = html;
-
             initLanguageSystem();
         })
         .catch(error => console.error("Error al cargar el header:", error));
@@ -11,20 +10,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function initLanguageSystem() {
     const langButtons = document.querySelectorAll("[data-language]");
-    
+
     langButtons.forEach((button) => {
         button.addEventListener("click", () => {
             const lang = button.dataset.language;
-            loadLanguage(lang);
+            setLanguage(lang);
         });
     });
 
     const savedLanguage = localStorage.getItem("preferred_language") || "es";
-    loadLanguage(savedLanguage);
+    setLanguage(savedLanguage);
 }
 
-function loadLanguage(lang) {
-    const textsToChange = document.querySelectorAll("[data-section]");
+function setLanguage(lang) {
+    localStorage.setItem("preferred_language", lang);
+    loadHeaderLanguage(lang);
+    document.dispatchEvent(new CustomEvent("languagechange", { detail: { lang } }));
+}
+
+function loadHeaderLanguage(lang) {
+    const headerContainer = document.getElementById("header-container");
+    const textsToChange = headerContainer.querySelectorAll("[data-section]");
 
     fetch(`./languages/header/${lang}.json`)
         .then(res => res.json())
@@ -37,7 +43,6 @@ function loadLanguage(lang) {
                     el.innerText = data[section][value];
                 }
             });
-            localStorage.setItem("preferred_language", lang);
         })
-        .catch(error => console.error("Error cargando el idioma:", error));
+        .catch(error => console.error("Error cargando el idioma del header:", error));
 }
