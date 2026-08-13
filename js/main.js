@@ -1,9 +1,32 @@
-const langButtons = document.querySelectorAll("[data-language]");
-const textsToChange = document.querySelectorAll("[data-section]");
+document.addEventListener("DOMContentLoaded", () => {
+    fetch("header.html")
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById("header-container").innerHTML = html;
 
-// 1. Función para cargar el archivo JSON del idioma seleccionado
+            initLanguageSystem();
+        })
+        .catch(error => console.error("Error al cargar el header:", error));
+});
+
+function initLanguageSystem() {
+    const langButtons = document.querySelectorAll("[data-language]");
+    
+    langButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            const lang = button.dataset.language;
+            loadLanguage(lang);
+        });
+    });
+
+    const savedLanguage = localStorage.getItem("preferred_language") || "es";
+    loadLanguage(savedLanguage);
+}
+
 function loadLanguage(lang) {
-    fetch(`./languages/index/${lang}.json`)
+    const textsToChange = document.querySelectorAll("[data-section]");
+
+    fetch(`./languages/header/${lang}.json`)
         .then(res => res.json())
         .then(data => {
             textsToChange.forEach((el) => {
@@ -11,26 +34,10 @@ function loadLanguage(lang) {
                 const value = el.dataset.value;
 
                 if (data[section] && data[section][value]) {
-                    el.innerHTML = data[section][value];
+                    el.innerText = data[section][value];
                 }
             });
-
-            // Guardar la preferencia en localStorage
             localStorage.setItem("preferred_language", lang);
         })
         .catch(error => console.error("Error cargando el idioma:", error));
 }
-
-// 2. Escuchar los clics en los botones de idioma
-langButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-        const lang = button.dataset.language;
-        loadLanguage(lang);
-    });
-});
-
-// 3. Al cargar la página, verificar si hay un idioma guardado
-document.addEventListener("DOMContentLoaded", () => {
-    const savedLanguage = localStorage.getItem("preferred_language") || "es"; // "es" como idioma por defecto
-    loadLanguage(savedLanguage);
-});

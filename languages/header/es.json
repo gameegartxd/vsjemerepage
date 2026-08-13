@@ -1,0 +1,17 @@
+{
+    "home": {
+        "text": "Inicio"
+    },
+    "wiki": {
+        "text": "Wiki"
+    },
+    "downloads": {
+        "text": "Descargas"
+    },
+    "music": {
+        "text": "Musica"
+    },
+    "quiz": {
+        "text": "Quiz"
+    }
+}
