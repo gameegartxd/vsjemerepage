@@ -47,3 +47,34 @@ p1 {
     background-color: rgb(0 0 0 / 0.5);
     color: white;
 }
+
+.download-button {
+    background: linear-gradient(to bottom, #5478db 0%, #2244b4 100%);
+    border: 1px solid #16147b;
+    border-radius: 20px;
+    box-shadow: inset 0px 1px 0px rgba(255, 255, 255, 0.6), 0px 2px 4px rgba(0, 0, 0, 0.3);
+    color: #ffffff;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 15px 24px;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.4);
+}
+
+.download-button:hover {
+    background: linear-gradient(to bottom, #548adb 0%, #2261b4 100%);
+}
+
+.download-button:active {
+    background: linear-gradient(to bottom, #2244b4 0%, #5478db 100%);
+    box-shadow: inset 0px 2px 3px rgba(0, 0, 0, 0.4);
+    position: relative;
+    top: 1px;
+}
