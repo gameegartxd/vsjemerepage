@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chat en vivo</title>
+<style>
+:root{--bg:#f4f5f7;--panel:#fff;--text:#1c1e21;--muted:#6b7280;--mine:#2f6fed;--mine-t:#fff;--other:#e9ebef;--line:#e1e4e8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111317;--panel:#1a1d23;--text:#e8eaed;--muted:#9aa0aa;--mine:#3b7bff;--mine-t:#fff;--other:#272b33;--line:#2c3038;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111317;--panel:#1a1d23;--text:#e8eaed;--muted:#9aa0aa;--mine:#3b7bff;--mine-t:#fff;--other:#272b33;--line:#2c3038;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+body{margin:0;height:100%;background:var(--bg);color:var(--text);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.app{display:flex;flex-direction:column;height:100%;max-width:720px;margin:0 auto;background:var(--panel);border-left:1px solid var(--line);border-right:1px solid var(--line)}
+header{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+header h1{font-size:17px;margin:0;flex:1}
+.dot{width:9px;height:9px;border-radius:50%;background:#f59e0b}
+.dot.on{background:#22c55e}
+#status{font-size:12px;color:var(--muted)}
+#msgs{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.m{max-width:78%;padding:8px 12px;border-radius:16px;background:var(--other);align-self:flex-start;word-wrap:break-word;overflow-wrap:anywhere}
+.m.me{background:var(--mine);color:var(--mine-t);align-self:flex-end}
+.m .who{font-size:11px;font-weight:600;opacity:.75;margin-bottom:2px}
+.m .t{font-size:10px;opacity:.6;text-align:right;margin-top:2px}
+.empty{margin:auto;color:var(--muted);text-align:center}
+form,.bar{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
+input{flex:1;min-width:0;padding:10px 14px;border:1px solid var(--line);border-radius:20px;background:var(--bg);color:var(--text);font:inherit;outline:none}
+input:focus{border-color:var(--mine)}
+button{border:0;border-radius:20px;padding:10px 18px;background:var(--mine);color:var(--mine-t);font:inherit;font-weight:600;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+#nameBox{padding:24px 16px;display:flex;flex-direction:column;gap:10px;margin:auto;width:100%;max-width:320px;text-align:center}
+</style>
+</head>
+<body>
+<div class="app">
+  <header><span class="dot" id="dot"></span><h1>Chat en vivo</h1><span id="status">Conectando…</span></header>
+  <div id="nameBox" hidden>
+    <strong>¿Cómo te llamas?</strong>
+    <input id="nameIn" maxlength="24" placeholder="Tu nombre" autocomplete="nickname">
+    <button id="nameOk">Entrar al chat</button>
+  </div>
+  <div id="msgs" hidden></div>
+  <form id="f" hidden>
+    <input id="txt" maxlength="500" placeholder="Escribe un mensaje…" autocomplete="off">
+    <button id="send" type="submit">Enviar</button>
+  </form>
+</div>
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var msgsEl=$('msgs'),nameBox=$('nameBox'),f=$('f'),txt=$('txt'),dot=$('dot'),statusEl=$('status');
+  var name='',uid='',col=null,localMsgs=[],live=false;
+
+  try{name=localStorage.getItem('chat_name')||''}catch(e){}
+  try{uid=localStorage.getItem('chat_uid')||''}catch(e){}
+  if(!uid){uid='u'+Math.random().toString(36).slice(2,10);try{localStorage.setItem('chat_uid',uid)}catch(e){}}
+
+  function fmt(ts){var d=new Date(ts);return d.toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'})}
+
+  function render(list){
+    var atBottom=msgsEl.scrollHeight-msgsEl.scrollTop-msgsEl.clientHeight<80;
+    msgsEl.textContent='';
+    if(!list.length){var e=document.createElement('div');e.className='empty';e.textContent='Aún no hay mensajes. ¡Escribe el primero!';msgsEl.appendChild(e);return}
+    list.forEach(function(m){
+      var d=document.createElement('div');d.className='m'+(m.uid===uid?' me':'');
+      var w=document.createElement('div');w.className='who';w.textContent=m.name||'Anónimo';
+      var b=document.createElement('div');b.textContent=m.text;
+      var t=document.createElement('div');t.className='t';t.textContent=fmt(m.ts);
+      if(m.uid!==uid)d.appendChild(w);d.appendChild(b);d.appendChild(t);msgsEl.appendChild(d);
+    });
+    if(atBottom||list.length<=1)msgsEl.scrollTop=msgsEl.scrollHeight;
+  }
+
+  function enter(){
+    nameBox.hidden=true;msgsEl.hidden=false;f.hidden=false;render(localMsgs);txt.focus();
+  }
+
+  $('nameOk').onclick=function(){
+    var v=$('nameIn').value.trim();if(!v)return;name=v;
+    try{localStorage.setItem('chat_name',name)}catch(e){}
+    enter();
+  };
+  $('nameIn').addEventListener('keydown',function(e){if(e.key==='Enter')$('nameOk').click()});
+
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    var v=txt.value.trim();if(!v)return;txt.value='';
+    var m={uid:uid,name:name,text:v,ts:Date.now()};
+    if(col){col.add(m).catch(function(){statusEl.textContent='Error al enviar'})}
+    else{localMsgs.push(m);render(localMsgs)}
+  });
+
+  if(name){enter()}else{nameBox.hidden=false}
+
+  // Conexión en tiempo real
+  var timer=setTimeout(function(){if(!live)statusEl.textContent='Modo local (sin conexión)'},10000);
+  (window.claude?window.claude.use('db'):Promise.resolve(null)).then(function(db){
+    if(!db){statusEl.textContent='Modo local (sin conexión)';return}
+    col=db.collection('messages');
+    col.orderBy('ts','asc').limit(200).onSnapshot(function(s){
+      live=true;clearTimeout(timer);dot.classList.add('on');statusEl.textContent='En vivo';
+      localMsgs=s.docs.map(function(d){return d.data()});
+      if(!msgsEl.hidden)render(localMsgs);
+    },function(){dot.classList.remove('on');statusEl.textContent='Desconectado'});
+  }).catch(function(){statusEl.textContent='Modo local (sin conexión)'});
+})();
+</script>
+</body>
+</html>
