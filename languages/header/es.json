@@ -1,0 +1,20 @@
+{
+    "devlog": {
+        "text": "DevLog"
+    },
+    "wiki": {
+        "text": "Wiki"
+    },
+    "downloads": {
+        "text": "Descargas"
+    },
+    "music": {
+        "text": "Musica"
+    },
+    "quiz": {
+        "text": "Quiz"
+    },
+    "comic": {
+        "text": "Comic"
+    }
+}

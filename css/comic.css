@@ -1,0 +1,50 @@
+@font-face {
+    font-family: 'transeeee';
+    src: url('/snas.ttf') format('truetype');
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+    min-height: 100vh;
+    margin: 0;
+
+    background-image: url('/images/gyatt.png'), url('/images/gyattAlt.png');
+    background-position: center, center;
+    background-repeat: repeat-y, repeat;
+
+    overflow-x: hidden;
+    font-family: 'transeeee', 'Comic Sans', cursive;
+}
+
+.comic {
+    display: block;
+    margin: 20px auto 100px auto;
+    block-size: 40px;
+    width: auto;
+    max-width: 900px;
+    height: auto;
+}
+
+.section {
+    color: #FFCC00;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    margin: 10px 0;
+}
+
+p1 {
+    margin-top: auto;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    width: 100%;
+    text-align: center;
+}
+
+.box {
+    background-color: rgb(0 0 0 / 0.5);
+    color: white;
+}
