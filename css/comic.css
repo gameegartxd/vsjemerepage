@@ -29,6 +29,21 @@ body {
     height: auto;
 }
 
+.nav-text {
+    position: relative;
+    color: #FFCC00;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.nav-text a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.nav-text a:hover {
+    color: hotpink;
+}
+
 .section {
     color: #FFCC00;
     text-align: center;

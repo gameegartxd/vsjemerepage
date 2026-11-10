@@ -11,7 +11,7 @@ function loadIndexLanguage(lang) {
     const headerContainer = document.getElementById("header-container");
     const textsToChange = document.querySelectorAll("[data-section]");
 
-    fetch(`./languages/index/${lang}.json`)
+    fetch(`/languages/index/${lang}.json`)
         .then(res => res.json())
         .then(data => {
             textsToChange.forEach((el) => {

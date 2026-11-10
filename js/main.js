@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    fetch("../header.html")
+    fetch("/header.html")
         .then(response => response.text())
         .then(html => {
             document.getElementById("header-container").innerHTML = html;
@@ -32,7 +32,7 @@ function loadHeaderLanguage(lang) {
     const headerContainer = document.getElementById("header-container");
     const textsToChange = headerContainer.querySelectorAll("[data-section]");
 
-    fetch(`../languages/header/${lang}.json`)
+    fetch(`/languages/header/${lang}.json`)
         .then(res => res.json())
         .then(data => {
             textsToChange.forEach((el) => {
