@@ -29,18 +29,18 @@ body {
     height: auto;
 }
 
-.nav-text {
+.nextorback {
     position: relative;
     color: #FFCC00;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
-.nav-text a {
+.nextorback a {
     color: inherit;
     text-decoration: none;
 }
 
-.nav-text a:hover {
+.nextorback a:hover {
     color: hotpink;
 }
 
